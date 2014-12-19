@@ -30,12 +30,14 @@ bool MainVisual::init()
     winSize = Director::getInstance()->getWinSize();
     KDTree* kdtree = new KDTree;
     KDNode* tree = NULL;
-    
+
 //    kdtree->vecList.push_back(Vec2(4, 2));
 //    kdtree->vecList.push_back(Vec2(14, 5));
 //    kdtree->vecList.push_back(Vec2(5, 8));
 //    kdtree->vecList.push_back(Vec2(7, 7));
 //    kdtree->vecList.push_back(Vec2(2, 18));
+//    kdtree->vecList.push_back(Vec2(11, 3));
+//    kdtree->vecList.push_back(Vec2(13, 12));
     
     for(int i=0; i<40; i++) {
         kdtree->vecList.push_back(Vec2(arc4random() % 100 + 1, arc4random() % 100 + 1));

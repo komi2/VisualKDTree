@@ -41,11 +41,8 @@ bool MainVisual::init()
         kdtree->vecList.push_back(Vec2(arc4random() % 100 + 1, arc4random() % 100 + 1));
     }
     
-    std::list<Vec2>::iterator it = kdtree->vecList.begin();
-    while(it != kdtree->vecList.end()) {
-        kdtree->construct((*it), tree);
-        ++it;
-    }
+    // Building of tree
+    kdtree->build(kdtree->vecList, tree);
     
     // Draw Point
     /////////////////////////////////
@@ -74,11 +71,11 @@ void MainVisual::drawPoint(KDNode* tree, KDNode* parent)
             tree->point.y = winSize.height - 60;
         }
         else {
-            tree->point.y = parent->point.y - 120;
+            tree->point.y = parent->point.y - 140;
             if(tree == parent->left) {
-                tree->point.x = parent->point.x - 1800 / pow(d, 2.1);
+                tree->point.x = parent->point.x - 1940 / pow(d, 2.2);
             } else if(tree == parent->right) {
-                tree->point.x = parent->point.x + 1800 / pow(d, 2.1);
+                tree->point.x = parent->point.x + 1940 / pow(d, 2.2);
             }
             
             // Draw line

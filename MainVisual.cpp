@@ -20,7 +20,6 @@ Scene* MainVisual::createScene()
 // on "init" you need to initialize your instance
 bool MainVisual::init()
 {
-    //////////////////////////////
     // 1. super init first
     if ( !Layer::init() )
     {
@@ -31,23 +30,28 @@ bool MainVisual::init()
     KDTree* kdtree = new KDTree;
     KDNode* tree = NULL;
 
-//    kdtree->vecList.push_back(Vec2(4, 2));
-//    kdtree->vecList.push_back(Vec2(14, 5));
-//    kdtree->vecList.push_back(Vec2(5, 8));
-//    kdtree->vecList.push_back(Vec2(7, 7));
-//    kdtree->vecList.push_back(Vec2(2, 18));
-//    kdtree->vecList.push_back(Vec2(11, 3));
-//    kdtree->vecList.push_back(Vec2(13, 12));
-    
-    for(int i=0; i<40; i++) {
-        kdtree->vecList.push_back(Vec2(arc4random() % 100 + 1, arc4random() % 100 + 1));
-    }
+    // Test data
+    kdtree->vecList.push_back(Vec2(4, 2));
+    kdtree->vecList.push_back(Vec2(14, 5));
+    kdtree->vecList.push_back(Vec2(5, 8));
+    kdtree->vecList.push_back(Vec2(7, 7));
+    kdtree->vecList.push_back(Vec2(2, 18));
+    kdtree->vecList.push_back(Vec2(11, 3));
+    kdtree->vecList.push_back(Vec2(13, 12));
+
+    // Create random data
+//    for(int i=0; i<31; i++) {
+//        kdtree->vecList.push_back(Vec2(arc4random() % 100 + 1, arc4random() % 100 + 1));
+//    }
     
     // Building of tree
     kdtree->build(kdtree->vecList, tree);
     
+    // Insert new data
+    Vec2 newData = Vec2(8, 6);
+    //kdtree->insert(tree, newData);
+    
     // Draw Point
-    /////////////////////////////////
     drawNode = DrawNode::create();
     line = DrawNode::create();
     this->drawPoint(tree);

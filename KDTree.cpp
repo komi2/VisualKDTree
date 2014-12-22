@@ -12,7 +12,7 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
 {
     int dep = crtDep+1;
     
-    if(vecList.size() == 0) {
+    if(vecList.size() == 0 || tree != NULL) {
         return;
     }
     
@@ -23,12 +23,11 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
         // Get median
         Vec2 M = this->getMedian(vecList, dep % 2);
         
-        if(tree == NULL) {
-            tree = new KDNode;
-            tree->depth = dep;
-            tree->vec2 = M;
-            tree->left = NULL; tree->right = NULL;
-        }
+        // Create node
+        tree = new KDNode;
+        tree->depth = dep;
+        tree->vec2 = M;
+        tree->left = NULL; tree->right = NULL;
         
         // divide data to right and left from median
         for(int i=0; i<vecList.size(); i++) {
@@ -44,11 +43,6 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
                 LEFT.push_back(vecList[i]);
             }
         }
-
-        CCLOG("MEDIAN = (%f, %f)", M.x, M.y);
-//        for(int j=0; j<RIGHT.size(); j++) {
-//            CCLOG("RIGHT = (%f, %f)", RIGHT[j].x, RIGHT[j].y);
-//        }
         
         this->build(RIGHT, tree->right, tree->depth);
         this->build(LEFT, tree->left, tree->depth);
@@ -118,3 +112,34 @@ void KDTree::qsort(std::vector<Vec2>& vecList, int left, int right, int num)
         this->qsort(vecList, j + 1, right, num);
     }
 }
+
+void KDTree::insert(KDNode*& tree, Vec2 newData, int dep)
+{
+    bool isRight;
+    
+    // Set new data
+    if(tree == NULL) {
+        tree = new KDNode;
+        tree->depth = dep++;
+        tree->vec2 = newData;
+        tree->left = NULL; tree->right = NULL;
+    }
+    
+    else {
+        if(tree->depth == 0) {
+            isRight = (tree->vec2.y < newData.y);
+        } else {
+            isRight = (tree->vec2.x < newData.x);
+        }
+        
+        if(isRight) {
+            this->insert(tree->right, newData, tree->depth);
+        } else {
+            this->insert(tree->left, newData, tree->depth);
+        }
+    }
+}
+
+
+
+

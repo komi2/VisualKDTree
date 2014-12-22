@@ -21,8 +21,11 @@ public:
     
     int depth = 0;
 
-    // Construct a tree
+    // Build a blanced tree
     void build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep = -1);
+    
+    // Insert new data
+    void insert(KDNode*& tree, Vec2 newData, int dep = -1);
     
     Vec2 getMedian(std::vector<Vec2>& vecList, int num);
     Vec2 med3(Vec2 x, Vec2 y, Vec2 z, int num);
@@ -30,9 +33,7 @@ public:
     void qsort(std::vector<Vec2>& vecList, int left, int right, int num);
     
     //TODO
-    // insert
     // nns
-    // balancing
     // delete
 };
 

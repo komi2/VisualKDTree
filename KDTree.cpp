@@ -17,7 +17,6 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
     }
     
     else {
-        bool isRight;
         std::vector<Vec2> RIGHT, LEFT;
         
         // Get median
@@ -30,19 +29,7 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
         tree->left = NULL; tree->right = NULL;
         
         // divide data to right and left from median
-        for(int i=0; i<vecList.size(); i++) {
-            if(dep % 2 == 0) {
-                isRight = (M.y < vecList[i].y);
-            } else {
-                isRight = (M.x < vecList[i].x);
-            }
-            
-            if(isRight) {
-                RIGHT.push_back(vecList[i]);
-            } else {
-                LEFT.push_back(vecList[i]);
-            }
-        }
+        this->divideNode2LR(vecList, LEFT, RIGHT, M, dep);
         
         this->build(RIGHT, tree->right, tree->depth);
         this->build(LEFT, tree->left, tree->depth);
@@ -113,6 +100,25 @@ void KDTree::qsort(std::vector<Vec2>& vecList, int left, int right, int num)
     }
 }
 
+void KDTree::divideNode2LR(std::vector<Vec2>& S, std::vector<Vec2>& L, std::vector<Vec2>& R, Vec2 M, int dep)
+{
+    bool isRight;
+    
+    for(int i=0; i<S.size(); i++) {
+        if(dep % 2 == 0) {
+            isRight = (M.y < S[i].y);
+        } else {
+            isRight = (M.x < S[i].x);
+        }
+        
+        if(isRight) {
+            R.push_back(S[i]);
+        } else {
+            L.push_back(S[i]);
+        }
+    }
+}
+
 void KDTree::insert(KDNode*& tree, Vec2 newData, int dep)
 {
     bool isRight;
@@ -120,7 +126,7 @@ void KDTree::insert(KDNode*& tree, Vec2 newData, int dep)
     // Set new data
     if(tree == NULL) {
         tree = new KDNode;
-        tree->depth = dep++;
+        tree->depth = ++dep;
         tree->vec2 = newData;
         tree->left = NULL; tree->right = NULL;
     }
@@ -137,6 +143,56 @@ void KDTree::insert(KDNode*& tree, Vec2 newData, int dep)
         } else {
             this->insert(tree->left, newData, tree->depth);
         }
+    }
+}
+
+void KDTree::deleteNode(KDNode*& tree, Vec2 node)
+{
+    if(tree == NULL) return;
+    
+    // Whether deleted
+    if(tree->vec2.x == node.x && tree->vec2.y == node.y) {
+        
+        if(tree->left == NULL && tree->right == NULL) {
+            tree = NULL;
+        }
+        
+        else {
+            std::vector<Vec2> vecList, L, R;
+            collectLowerNode(tree, vecList);
+            
+            // Refresh
+            tree->right = NULL;
+            tree->left = NULL;
+            tree->vec2 = this->getMedian(vecList, tree->depth);
+            
+            this->divideNode2LR(vecList, L, R, tree->vec2, tree->depth);
+            
+            // Re build
+            this->build(L, tree->left, tree->depth);
+            this->build(R, tree->right, tree->depth);
+        }
+    }
+    
+    // Re search
+    else {
+        this->deleteNode(tree->left, node);
+        this->deleteNode(tree->right, node);
+    }
+}
+
+void KDTree::collectLowerNode(KDNode*& tree, std::vector<Vec2>& vecList)
+{
+    if(tree->left != NULL) {
+        vecList.push_back(tree->left->vec2);
+        collectLowerNode(tree->left, vecList);
+        tree->left = NULL;
+    }
+    
+    if(tree->right != NULL) {
+        vecList.push_back(tree->right->vec2);
+        collectLowerNode(tree->right, vecList);
+        tree->right = NULL;
     }
 }
 

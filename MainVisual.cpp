@@ -49,7 +49,10 @@ bool MainVisual::init()
     
     // Insert new data
     Vec2 newData = Vec2(8, 6);
-    //kdtree->insert(tree, newData);
+    kdtree->insert(tree, newData);
+    
+    // Delete a node
+    kdtree->deleteNode(tree, Vec2(11, 3));
     
     // Draw Point
     drawNode = DrawNode::create();

@@ -27,8 +27,14 @@ public:
     // Insert new data
     void insert(KDNode*& tree, Vec2 newData, int dep = -1);
     
+    // Delete a node
+    void deleteNode(KDNode*& tree, Vec2 node);
+    
     Vec2 getMedian(std::vector<Vec2>& vecList, int num);
     Vec2 med3(Vec2 x, Vec2 y, Vec2 z, int num);
+    // divide data to right and left from median
+    void divideNode2LR(std::vector<Vec2>& S, std::vector<Vec2>& L, std::vector<Vec2>& R, Vec2 M, int dep);
+    void collectLowerNode(KDNode*& tree, std::vector<Vec2>& vecList);
     
     void qsort(std::vector<Vec2>& vecList, int left, int right, int num);
     

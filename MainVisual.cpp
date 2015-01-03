@@ -52,7 +52,10 @@ bool MainVisual::init()
     kdtree->insert(tree, newData);
     
     // Delete a node
-    kdtree->deleteNode(tree, Vec2(11, 3));
+    kdtree->deleteNode(tree, Vec2(7, 7));
+    
+    // Nearest neighbour search
+    kdtree->NNSearch(tree, Vec2(13, 8));
     
     // Draw Point
     drawNode = DrawNode::create();

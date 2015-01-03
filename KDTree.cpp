@@ -29,7 +29,7 @@ void KDTree::build(std::vector<Vec2> vecList, KDNode*& tree, int crtDep)
         tree->left = NULL; tree->right = NULL;
         
         // divide data to right and left from median
-        this->divideNode2LR(vecList, LEFT, RIGHT, M, dep);
+        this->partitionNode2LR(vecList, LEFT, RIGHT, M, dep);
         
         this->build(RIGHT, tree->right, tree->depth);
         this->build(LEFT, tree->left, tree->depth);
@@ -100,7 +100,7 @@ void KDTree::qsort(std::vector<Vec2>& vecList, int left, int right, int num)
     }
 }
 
-void KDTree::divideNode2LR(std::vector<Vec2>& S, std::vector<Vec2>& L, std::vector<Vec2>& R, Vec2 M, int dep)
+void KDTree::partitionNode2LR(std::vector<Vec2>& S, std::vector<Vec2>& L, std::vector<Vec2>& R, Vec2 M, int dep)
 {
     bool isRight;
     
@@ -166,7 +166,7 @@ void KDTree::deleteNode(KDNode*& tree, Vec2 node)
             tree->left = NULL;
             tree->vec2 = this->getMedian(vecList, tree->depth);
             
-            this->divideNode2LR(vecList, L, R, tree->vec2, tree->depth);
+            this->partitionNode2LR(vecList, L, R, tree->vec2, tree->depth);
             
             // Re build
             this->build(L, tree->left, tree->depth);
@@ -196,6 +196,61 @@ void KDTree::collectLowerNode(KDNode*& tree, std::vector<Vec2>& vecList)
     }
 }
 
+void KDTree::NNSearch(KDNode* tree, Vec2 q)
+{
+    Vec2 p = Vec2(-1, -1);
+    float dst = FLT_MAX;
+    this->NNSearch(tree, q, &p, &dst);
+    
+    if(p.x == -1 && p.y == -1) {
+        CCLOG("Not found.");
+    } else {
+        CCLOG("NNS result: dst = %f, p = (%f, %f)", dst, p.x, p.y);
+    }
+}
 
+void KDTree::NNSearch(KDNode* tree, Vec2 q, Vec2* p, float* dst)
+{
+    bool isR, even;
+    float dx, dy, r, axis, val, minD;
+    KDNode *n, *f;
+    
+    if(tree == NULL) return;
+    
+    even = tree->depth % 2 == 0;
+    dx = tree->vec2.x - q.x; dy = tree->vec2.y - q.y;
+    
+    if(even) {
+        isR = tree->vec2.y < q.y;
+        axis = q.y;
+        val = tree->vec2.y;
+    } else {
+        isR = tree->vec2.x < q.x;
+        axis = q.x;
+        val = tree->vec2.x;
+    }
+    
+    // Partitioning
+    n =   (isR) ? tree->right : tree->left;
+    f = ! (isR) ? tree->right : tree->left;
+    
+    this->NNSearch(n, q, p, dst);
+    
+    // Get distance
+    r = sqrt(dx*dx + dy*dy);
+    
+    // Update
+    if(r < *dst) {
+        *p = tree->vec2;
+        *dst = r;
+    }
+    
+    minD = sqrt((p->x-q.x)*(p->x-q.x) + (p->y-q.y)*(p->y-q.y));
+    
+    // The circle overlaps other side
+    if(!isR ? (axis+minD > val) : (axis-minD <= val)) {
+        this->NNSearch(f, q, p, dst);
+    }
+}
 
 
